@@ -1,1 +1,297 @@
-# lawkeepr-rag-ai-chatbot-project
+# Lawkeeper - AI 법률 상담 챗봇 🏛️
+
+> 전문 변호사 수준의 법률 상담을 제공하는 AI 챗봇 서비스
+
+## 📋 목차
+- [프로젝트 개요](#프로젝트-개요)
+- [주요 기능](#주요-기능)
+- [시스템 아키텍처](#시스템-아키텍처)
+- [데이터셋](#데이터셋)
+- [AI 모델 및 기술 스택](#ai-모델-및-기술-스택)
+- [프롬프트 엔지니어링](#프롬프트-엔지니어링)
+- [설치 및 실행](#설치-및-실행)
+- [배포](#배포)
+- [성능 모니터링](#성능-모니터링)
+- [API 문서](#api-문서)
+
+## 🎯 프로젝트 개요
+
+Lawkeeper는 RAG(Retrieval-Augmented Generation) 기술을 활용하여 실제 법률 문서와 판례를 기반으로 정확한 법률 상담을 제공하는 AI 챗봇입니다. 일반인도 쉽게 이해할 수 있는 법률 조언을 제공하며, 전문 변호사의 상담 스타일을 모방합니다.
+
+### ✨ 주요 특징
+- **실시간 스트리밍 응답**: 빠른 응답으로 자연스러운 대화 경험
+- **법률 문서 기반 답변**: 실제 판례와 법조문을 참조한 신뢰성 있는 답변
+- **단계별 상담 시스템**: 초기 상담 → 후속 질문으로 체계적인 상담 진행
+- **포괄적 로깅**: BigQuery를 통한 상담 데이터 분석 및 모니터링
+
+## 🚀 주요 기능
+
+### 1. 지능형 상담 시스템
+- **초기 상담**: 사용자의 상황 파악 후 종합적인 법률 자문 제공
+- **후속 질문**: 기존 상담 내용을 바탕으로 한 추가 질문 처리
+- **맥락 유지**: 세션별 대화 히스토리 관리
+
+### 2. RAG 기반 검색
+- **다중 컬렉션 검색**: 5개 법률 데이터베이스에서 관련 문서 검색
+- **병렬 처리**: 멀티스레딩을 통한 빠른 검색 성능
+- **스마트 캐싱**: 임베딩 및 응답 캐시로 성능 최적화
+
+### 3. 실시간 모니터링
+- **BigQuery 로깅**: 채팅 상호작용, 성능 메트릭, 에러 로그
+- **헬스 체크**: 시스템 상태 실시간 모니터링
+- **성능 분석**: 응답 시간, 처리량 등 상세 메트릭
+
+## 🏗️ 시스템 아키텍처
+
+```
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   Frontend      │────│   FastAPI       │────│   ChromaDB      │
+│   (HTML/JS)     │    │   (main.py)     │    │   (Vector DB)   │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+                                │                        │
+                                │                        │
+                       ┌─────────────────┐    ┌─────────────────┐
+                       │   OpenAI        │    │   Embedding     │
+                       │   (GPT-4o-mini) │    │   (ko-sbert)    │
+                       └─────────────────┘    └─────────────────┘
+                                │
+                                │
+                       ┌─────────────────┐
+                       │   BigQuery      │
+                       │   (로깅/분석)    │
+                       └─────────────────┘
+```
+
+### 배포 환경
+- **Cloud Run**: 서버리스 컨테이너 배포
+- **Google Cloud VM**: ChromaDB 및 임베딩 서비스 호스팅
+- **BigQuery**: 로그 데이터 저장 및 분석
+
+## 📊 데이터셋
+
+### 법률 문서 데이터
+| 데이터 유형 | 출처 | 설명 |
+|-------------|------|------|
+| 법률/규정 텍스트 분석 | [AI Hub](https://www.aihub.or.kr/aihubdata/data/view.do?currMenu=115&topMenu=100&aihubDataSe=realm&dataSetSn=580) | 판결서, 약관 등 법률 문서 |
+| 법률 상담 데이터 | [Hugging Face](https://huggingface.co/datasets/juicyjung/easylaw_kr) | easylaw_kr.json |
+| 대법원 판례 | [Hugging Face](https://huggingface.co/datasets/joonhok-exo-ai/test/tree/main) | 대법원 판례 데이터 |
+| 계약 법률 문서 | [AI Hub](https://www.aihub.or.kr/aihubdata/data/view.do?currMenu=&topMenu=&aihubDataSe=data&dataSetSn=71834) | 계약 관련 법률 서식 |
+| 계약 외 법률 문서 | [AI Hub](https://www.aihub.or.kr/aihubdata/data/view.do?currMenu=&topMenu=&aihubDataSe=data&dataSetSn=71835) | 일반 법률 서식 |
+| 상황별 판례 | [AI Hub](https://www.aihub.or.kr/aihubdata/data/view.do?currMenu=115&topMenu=100&dataSetSn=71723) | 고도화된 판례 데이터 |
+
+### 추가 데이터
+- **한글 6법전**: 헌법, 민법, 형법, 상법, 민사소송법, 형사소송법 (PDF/JSON)
+- **사이버 상담 크롤링**: 실제 법률 상담 사례
+- **법률 상담 데이터**: 상담 Q&A 데이터
+
+## 🤖 AI 모델 및 기술 스택
+
+### 임베딩 모델 선택
+다양한 한국어 임베딩 모델을 평가하여 최적의 모델을 선택했습니다.
+
+| 모델 | 코사인 유사도 | 선택 여부 |
+|------|---------------|-----------|
+| **ko-sbert-nli** | **0.6592** | ✅ 선택 |
+| nlpai-lab/KURE-v1 | 0.5651 | ❌ |
+
+**선택 이유**: ko-sbert-nli 모델이 법률 질문과의 유사도에서 약 19% 더 높은 성능을 보였습니다.
+
+### 기술 스택
+- **언어 모델**: OpenAI GPT-4o-mini
+- **임베딩**: ko-sbert-nli
+- **벡터 데이터베이스**: ChromaDB
+- **웹 프레임워크**: FastAPI
+- **배포**: Google Cloud Run
+- **로깅**: Google BigQuery
+- **유사도 측정**: 코사인 유사도
+
+## 📝 프롬프트 엔지니어링
+
+### 1. 시스템 프롬프트 (초기 상담)
+```
+당신은 15년 경력의 전문 변호사입니다. 의뢰인이 법적 문제를 가지고 상담실을 찾아왔습니다.
+
+📌 제공된 참고 문서를 **우선적으로 활용**하되, 문서 내용을 바탕으로 한 합리적인 해석과 실무 경험을 결합하여 도움이 되는 답변을 제공하세요.
+
+🏛️ **변호사로서의 상담 스타일:**
+- 친근하면서도 전문적인 어조를 유지하세요
+- 의뢰인의 감정을 이해하고 공감하되, 법적 현실을 명확히 전달하세요
+- "제 경험상", "이런 사건을 여러 번 다뤄봤는데" 같은 실무 경험을 언급하세요
+```
+
+### 2. 상담 구조화
+상담은 다음 8가지 항목으로 체계화됩니다:
+1. **상황 정리**: 핵심 쟁점 확인
+2. **법적 판단**: 관련 법조문 및 판례 적용
+3. **판례 적용 가능성**: 구체적 판례 인용 및 분석
+4. **실무적 조언**: 경험 기반 대응 방안
+5. **현실적 선택지**: 비용, 시간 고려한 옵션
+6. **즉시 실행 가능한 조치**: 구체적 행동 가이드
+7. **주의사항**: 법적 리스크 경고
+8. **다음 단계 준비**: 전문가 상담 시 확인사항
+
+### 3. 후속 질문 프롬프트
+```
+당신은 의뢰인과 이미 초기 상담을 마친 전문 변호사입니다.
+
+📌 **응답 원칙:**
+- **먼저 핵심 답변부터**: "결론적으로 말씀드리면..." 으로 시작
+- **대화 히스토리를 고려하여** 이전 자문과 연관된 내용을 일관성 있게 제공하세요
+```
+
+### 4. 상황 충분성 판단
+사용자의 상황 설명이 상담하기에 충분한지 동적으로 판단:
+- **단어 수 분석**: 최소 25단어 이상
+- **법적 키워드 검출**: 피해, 계약, 분쟁 등
+- **부정적 단서 고려**: "모르겠다", "없다" 등의 표현
+- **GPT 기반 동적 평가**: 상황에 맞는 자연스러운 추가 질문 생성
+
+## 🛠️ 설치 및 실행
+
+### 환경 요구사항
+```bash
+Python 3.8+
+FastAPI
+OpenAI API Key
+Google Cloud 계정
+```
+
+### 설치
+```bash
+# 레포지토리 클론
+git clone https://github.com/yourusername/lawkeeper.git
+cd lawkeeper
+
+# 의존성 설치
+pip install -r requirements.txt
+```
+
+### 환경변수 설정
+```bash
+# .env 파일 생성
+OPENAI_API_KEY=your_openai_api_key
+VM_EMBEDDING_HOST=your_embedding_server_ip
+VM_EMBEDDING_PORT=8001
+VM_CHROMADB_HOST=your_chromadb_server_ip
+VM_CHROMADB_PORT=8000
+```
+
+### 로컬 실행
+```bash
+python main.py
+```
+
+서버가 `http://localhost:8080`에서 실행됩니다.
+
+## ☁️ 배포
+
+### Google Cloud Run 배포
+```bash
+# 컨테이너 빌드
+gcloud builds submit --tag gcr.io/PROJECT_ID/lawkeeper
+
+# Cloud Run 배포
+gcloud run deploy lawkeeper \
+  --image gcr.io/PROJECT_ID/lawkeeper \
+  --platform managed \
+  --region asia-northeast3 \
+  --allow-unauthenticated
+```
+
+### BigQuery 테이블 설정
+배포 전 다음 테이블들을 생성해야 합니다:
+- `chat_interactions`: 채팅 상호작용 로그
+- `chat_analytics`: 상담 분석 데이터
+- `error_logs`: 에러 로그
+- `performance_metrics`: 성능 메트릭
+- `system_health`: 시스템 상태
+
+## 📈 성능 모니터링
+
+### BigQuery 로깅
+5개 테이블에 실시간 로그 저장:
+1. **채팅 상호작용**: 질문-답변 쌍, 처리 시간
+2. **채팅 분석**: 질문 복잡도, 응답 품질 메트릭
+3. **에러 로그**: 시스템 오류 및 예외상황
+4. **성능 메트릭**: API 응답시간, 임베딩 처리시간
+5. **시스템 상태**: 서비스 가용성, 연결 상태
+
+### 주요 메트릭
+- **응답 시간**: 평균 2-5초
+- **문서 검색**: 5개 컬렉션에서 병렬 검색
+- **캐시 적중률**: 임베딩 및 응답 캐시 활용
+- **스트리밍 성능**: 실시간 청크 단위 응답
+
+## 📡 API 문서
+
+### 주요 엔드포인트
+
+#### 채팅 API
+```http
+POST /api/chat
+Content-Type: application/json
+
+{
+  "message": "교통사고 피해 보상에 대해 문의드립니다.",
+  "session_id": "unique_session_id"
+}
+```
+
+**응답**: Server-Sent Events 스트리밍
+
+#### 세션 리셋
+```http
+POST /api/reset
+Content-Type: application/json
+
+{
+  "session_id": "unique_session_id"
+}
+```
+
+#### 헬스 체크
+```http
+GET /health
+```
+
+**응답**:
+```json
+{
+  "status": "ok",
+  "chromadb_connected": true,
+  "embedding_service_connected": true,
+  "openai_ready": true,
+  "total_documents": 100000,
+  "timestamp": "2024-01-01T00:00:00"
+}
+```
+
+#### BigQuery 테스트
+```http
+GET /test-bigquery
+```
+
+## 🔧 기술적 특징
+
+### 성능 최적화
+- **멀티스레딩**: 25개 스레드풀로 병렬 검색
+- **캐싱 시스템**: 임베딩(100개), 응답(200개) 캐시
+- **스트리밍 응답**: 실시간 청크 단위 전송
+- **에러 처리**: 포괄적인 예외 처리 및 복구
+
+### 확장성
+- **서버리스 배포**: Cloud Run 자동 스케일링
+- **상태 비저장**: 세션 데이터 메모리 관리
+- **모듈화**: 서비스별 독립적인 클래스 구조
+
+## 📞 문의 및 기여
+
+프로젝트에 대한 질문이나 기여를 원하시면 이슈를 생성해주세요.
+
+## 📄 라이선스
+
+이 프로젝트는 MIT 라이선스 하에 배포됩니다.
+
+---
+
+**Lawkeeper** - 더 나은 법률 접근성을 위한 AI 솔루션 🏛️⚖️
