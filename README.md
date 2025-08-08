@@ -200,9 +200,15 @@ Lawkeeper는 RAG(Retrieval-Augmented Generation) 기술을 활용하여 실제 �
 - **사용자 경험 개선**: 스트리밍 응답으로 대기 시간 단축
 - **오류 처리 강화**: 예외 상황에 대한 안내 메시지 개선
 
-## 🛠️ 설치 및 실행
+## 🛠️ 개발 환경 설정 (개발자용)
 
-### 환경 요구사항
+> **일반 사용자는 이 섹션을 건너뛰고 웹 서비스를 직접 이용하세요!**
+
+### 로컬 개발 환경
+개발자가 프로젝트를 수정하거나 기여하고 싶은 경우에만 필요합니다.
+
+#### 환경 요구사항
+#### 환경 요구사항
 ```bash
 Python 3.8+
 FastAPI
@@ -210,7 +216,7 @@ OpenAI API Key
 Google Cloud 계정
 ```
 
-### 설치
+#### 로컬 설치 (개발자용)
 ```bash
 # 레포지토리 클론
 git clone https://github.com/yourusername/lawkeeper.git
@@ -220,7 +226,7 @@ cd lawkeeper
 pip install -r requirements.txt
 ```
 
-### 환경변수 설정
+#### 환경변수 설정
 ```bash
 # .env 파일 생성
 OPENAI_API_KEY=your_openai_api_key
@@ -230,7 +236,7 @@ VM_CHROMADB_HOST=your_chromadb_server_ip
 VM_CHROMADB_PORT=8000
 ```
 
-### 로컬 실행
+#### 로컬 실행
 ```bash
 python main.py
 ```
@@ -239,7 +245,21 @@ python main.py
 
 ## ☁️ 배포
 
-### Google Cloud Run 배포
+### 웹 서비스 배포
+Lawkeeper는 **웹 기반 서비스**로 배포되어 별도의 설치 없이 브라우저를 통해 바로 이용할 수 있습니다.
+
+#### 서비스 접근
+- **배포 형태**: 웹 애플리케이션
+- **접근 방법**: URL을 통한 직접 접근
+- **플랫폼**: Google Cloud Run (서버리스)
+- **가용성**: 24/7 온라인 서비스
+
+#### 배포 아키텍처
+```
+사용자 브라우저 → [인터넷] → Cloud Run URL → FastAPI 서버 → Google VM (임베딩/ChromaDB)
+```
+
+### Google Cloud Run 배포 과정
 ```bash
 # 컨테이너 빌드
 gcloud builds submit --tag gcr.io/PROJECT_ID/lawkeeper
@@ -249,8 +269,21 @@ gcloud run deploy lawkeeper \
   --image gcr.io/PROJECT_ID/lawkeeper \
   --platform managed \
   --region asia-northeast3 \
-  --allow-unauthenticated
+  --allow-unauthenticated \
+  --port 8080
 ```
+
+#### 배포 환경 설정
+- **리전**: asia-northeast3 (서울)
+- **인증**: 비인증 접근 허용 (퍼블릭 서비스)
+- **자동 스케일링**: 트래픽에 따른 자동 확장
+- **HTTPS**: 자동 SSL 인증서 적용
+
+### 서비스 특징
+- ✅ **설치 불필요**: 브라우저만으로 즉시 이용 가능
+- ✅ **크로스 플랫폼**: PC, 모바일, 태블릿 모든 디바이스 지원
+- ✅ **실시간 서비스**: 24시간 언제든지 접근 가능
+- ✅ **자동 업데이트**: 서버 측 업데이트로 항상 최신 버전 제공
 
 ### BigQuery 테이블 설정
 배포 전 다음 테이블들을 생성해야 합니다:
