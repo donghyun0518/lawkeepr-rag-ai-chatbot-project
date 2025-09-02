@@ -1,5 +1,14 @@
 # LAWKEEPER - AI 법률 상담 시스템
 
+<hr>
+<p style="text-align: center;">
+    <a href="https://github.com/donghyun0518/dacon-power-consumption-xgboost-catboost-lightgbm/blob/main/%EC%A0%84%EB%A0%A5%20(1).pdf" target="_blank">
+        <img src="https://github.com/donghyun0518/dacon-power-consumption-xgboost-catboost-lightgbm/blob/main/power_consuption_main.png" alt="Project Cover" style="width: 1000px; border: 1px solid #c9d1d9; border-radius: 8px;">
+    </a>
+</p>
+
+[프로젝트 발표 자료](https://github.com/donghyun0518/dacon-power-consumption-xgboost-catboost-lightgbm/blob/main/%EC%A0%84%EB%A0%A5%20(1).pdf)
+
 > 전문 변호사 수준의 신뢰할 수 있는 AI 법률 상담 서비스
 
 🔗 **Live Demo**: [https://lawkeeper.net/](https://lawkeeper.net/)
