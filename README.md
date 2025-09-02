@@ -60,11 +60,11 @@ graph TB
 ### 법률 데이터 소스
 | 컬렉션명 | 데이터 유형 | 포맷 | 설명 |
 |---------|------------|------|------|
-| `legal_rag_docs_kosbert` | 판례 문서 | JSON | AI Hub 판례 데이터 (청크 400, 오버랩 100) |
+| `legal_rag_docs_kosbert` | 판례 문서 | JSON | AI Hub 법률-규정 텍스트 분석 데이터_고도화_상황에 따른 판례 데이터 (청크 400, 오버랩 100) |
 | `legal_qa_rag_docs` | Q&A 상담 | CSV→JSON | 크롤링 기반 법률 상담 사례 |
-| `legal_cases` | 대법원 판례 | JSON | 공식 대법원 판례 정보 |
+| `legal_cases` | 대법원 판례 | JSON | AI Hub 법률/규정 (판결서, 약관 등) 텍스트 분석 데이터 |
 | `legal_laws` | 법령 조문 | PDF→JSON | 대학교 법학과 법전 데이터 |
-| `terms_clauses` | 약관 조항 | JSON | 각종 약관 및 계약 조항 |
+| `terms_clauses` | 약관 조항 | JSON | AI Hub 법률/규정 (판결서, 약관 등) 텍스트 분석 데이터 |
 
 ### 데이터 전처리 파이프라인
 ```python
