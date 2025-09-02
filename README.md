@@ -3,7 +3,7 @@
 <hr>
 <p style="text-align: center;">
     <a href="https://github.com/donghyun0518/lawkeepr-rag-ai-chatbot-project/blob/main/lawkeeper.pdf" target="_blank">
-        <img src="https://github.com/donghyun0518/dacon-power-consumption-xgboost-catboost-lightgbm/blob/main/power_consuption_main.png" alt="Project Cover" style="width: 1000px; border: 1px solid #c9d1d9; border-radius: 8px;">
+        <img src="https://github.com/donghyun0518/lawkeepr-rag-ai-chatbot-project/blob/main/lawkeeper_main.png" alt="Project Cover" style="width: 1000px; border: 1px solid #c9d1d9; border-radius: 8px;">
     </a>
 </p>
 
